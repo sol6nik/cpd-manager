@@ -1,23 +1,91 @@
 import telebot
+from telebot import types
 
-API_TOKEN = '6966909581:AAGz188KkuquKCzz6BGYQKv6swk9trrTN6o'
-
-bot = telebot.TeleBot(API_TOKEN)
-
-
-# Handle '/start' and '/help'
-@bot.message_handler(commands=['help', 'start'])
-def send_welcome(message):
-    bot.reply_to(message, """\
-Hi there, I am EchoBot.
-I am here to echo your kind words back to you. Just say anything nice and I'll say the exact same thing to you!\
-""")
+token = "6589261942:AAG20650skAqVtlO6QFz1tML0eAOY0okaDI"
+bot = telebot.TeleBot(token)
 
 
-# Handle all other messages with content_type 'text' (content_types defaults to ['text'])
-@bot.message_handler(func=lambda message: True)
-def echo_message(message):
-    bot.reply_to(message, message.text)
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(message.chat.id,
+                     "Здравствуйте, я телебот Московского политеха, который поможет вам разобраться с проектной деятельностью")
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("Управление проектами / Основы управления проектами / Проектный менеджмент")
+    item2 = types.KeyboardButton("Перезачет дисциплины")
+    item3 = types.KeyboardButton("Ликвидация расхождений в учебных планах")
+    item4 = types.KeyboardButton("Основы технологического предпринимательства / Технологическое предпринимательство")
+    markup.add(item1, item2, item3, item4)
+    bot.send_message(message.chat.id, message.from_user.first_name + ", выберите что вас интересует",
+                     reply_markup=markup)
 
 
-bot.infinity_polling()
+@bot.message_handler(content_types=['text'])
+def message(callback):
+    if callback.text == "Управление проектами / Основы управления проектами / Проектный менеджмент":
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1_1 = types.KeyboardButton("У меня долг за прошлый семестр")
+        item1_2 = types.KeyboardButton(
+            "В расписании есть дисциплина <<управление проектами>>(<< Основы управления проектами >>,<< Проектный менеджмент>>). Что нужно сделать для получения оценки <<зачтено>>?")
+        markup.add(item1_1, item1_2)
+        bot.send_message(callback.chat.id, "Выберите что вас интересует", reply_markup=markup)
+
+    # проблемный запрос->
+    elif callback.text == "В расписании есть дисциплина <<управление проектами>>(<< Основы управления проектами >>,<< Проектный менеджмент>>). Что нужно сделать для получения оценки <<зачтено>>?":
+        bot.send_message(callback.chat.id,
+                         "Вам нужно пройти курс в LMS <<Управление проектами>> Изучите теоретические материалы курса и пройдите тесты Для получения оценки <<зачтено>> вы должны пройти все тесты. в каждом из которых нужно дать не менее 60% правильных ответов. После прохождения курса обязательно нужно явиться на пересдачу. Дописать про дедлайн для прохождения тестов перед зачетом")
+
+
+    elif callback.text == "Перезачет дисциплины":
+        bot.send_message(callback.chat.id,
+                         "Обратитесь в центр по работе со студентами. Если вы уже изучали дисциплину, вам нужно написать заявление о перезачете")
+
+
+    elif callback.text == "У меня долг за прошлый семестр":
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1_1 = types.KeyboardButton("Что нужно сделать, чтобы получить оценку <<зачтено>> за прошлый семестр?")
+        item1_2 = types.KeyboardButton("Когда и где пройдет пересдача?")
+        markup.add(item1_1, item1_2)
+        bot.send_message(callback.chat.id, "Выберите что вас интересует", reply_markup=markup)
+
+
+    elif callback.text == "Когда и где пройдет пересдача?":
+        bot.send_message(callback.chat.id,
+                         "Дата, время и ссылка для пересдачи опубликованы в личном кабинете: Расписания -> График приема задолженностей -> Центр проектной деятельности")
+
+
+    elif callback.text == "Что нужно сделать, чтобы получить оценку <<зачтено>> за прошлый семестр?":
+        bot.send_message(callback.chat.id,
+                         "Вам нужно пройти курс в LMS <<Управление проектами>> Изучите теоретические материалы курса и пройдите тесты Для получения оценки <<зачтено>> вы должны пройти все тесты. в каждом из которых нужно дать не менее 60% правильных ответов. После прохождения курса обязательно нужно явиться на пересдачу. Дописать про дедлайн для прохождения тестов перед зачетом")
+
+
+    elif callback.text == "Ликвидация расхождений в учебных планах":
+        bot.send_message(callback.chat.id, "Ответ - это текст памятки для ликвидации РУП")
+
+
+    elif callback.text == "Основы технологического предпринимательства / Технологическое предпринимательство":
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1_1 = types.KeyboardButton(
+            "В расписании есть дисциплина <<Основы технологического предпринимательства>>. Что нужно сделать для получения оценки <<зачтено>>?")
+        item1_2 = types.KeyboardButton("У меня долг за прошлый семестр по данной дисциплине")
+        markup.add(item1_1, item1_2)
+        bot.send_message(callback.chat.id, "Выберите что вас интересует", reply_markup=markup)
+
+
+    elif callback.text == "У меня долг за прошлый семестр по данной дисциплине":
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1_1 = types.KeyboardButton("Когда и где пройдет пересдача?")
+        item1_2 = types.KeyboardButton("Что нужно сделать, чтобы получить оценку <<зачтено>>?")
+        markup.add(item1_1, item1_2)
+        bot.send_message(callback.chat.id, "Выберите что вас интересует", reply_markup=markup)
+
+
+    elif callback.text == "Что нужно сделать, чтобы получить оценку <<зачтено>>?":
+        bot.send_message(callback.chat.id,
+                         "Вам нужно пройти курс в LMS <<Основы технологического предпринимательства 22>>. Изучите теоретические материалы курса и пройдите тесты. Для получения оценки <<зачтено>> вы должны пройти все тесты, в каждом из которых нужно дать не менее 60% правильных ответов. После прохождения курса обязательно нужно явиться на пересдачу. Дописать про дедлайн для прохождения тестов перед пересдачей")
+
+    elif callback.text == "В расписании есть дисциплина <<Основы технологического предпринимательства>>. Что нужно сделать для получения оценки <<зачтено>>?":
+        bot.send_message(callback.chat.id,
+                         "Вам нужно пройти курс в LMS уточнить название курса. Изучите теоретические материалы курса и пройдите тесты. Для получения оценки <<зачтено>> вы должны пройти все тесты, в каждом из которых нужно дать не менее 60% правильных ответов. После прохождения курса обязательно нужно явиться на пересдачу. Дописать про дедлайн для прохождения тестов перед зачетом")
+
+
+bot.polling(none_stop=True)
